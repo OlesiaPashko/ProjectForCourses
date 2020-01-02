@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BLL.Services;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Project
 {
@@ -80,6 +81,11 @@ namespace Project
 
                 };
             });
+
+            services.AddSwaggerGen(x =>
+            {
+                x.SwaggerDoc("v1", new Info { Title = "Project API", Version = "v1" });
+            });
             //services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         }
 
@@ -94,7 +100,17 @@ namespace Project
             {
                 app.UseHsts();
             }
+            var swaggerOptions = new Project.Options.SwaggerOptions();
+            Configuration.GetSection(nameof(Project.Options.SwaggerOptions)).Bind(swaggerOptions);
 
+            app.UseSwagger(options =>
+            {
+                options.RouteTemplate = swaggerOptions.JsonRoute;
+            });
+            app.UseSwaggerUI(options =>
+            {
+                options.SwaggerEndpoint(swaggerOptions.UIEndpoint, swaggerOptions.Description);
+            });
             app.UseHttpsRedirection();
             app.UseMvc();
         }
