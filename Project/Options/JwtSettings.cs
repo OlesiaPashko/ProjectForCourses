@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Project.Models
+namespace Project.Options
 {
-    public class TestClass
+    public class JwtSettings
     {
-        public string Name { get; set; }
+        public string Secret { get; set; }
     }
 }

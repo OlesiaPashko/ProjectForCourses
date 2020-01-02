@@ -27,9 +27,9 @@ namespace Project.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody] TestClass test)
+        public void Post([FromBody] string test)
         {
-            Console.WriteLine(test.Name);
+            Console.WriteLine(test);
         }
 
         // PUT api/values/5
