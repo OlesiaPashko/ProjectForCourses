@@ -6,65 +6,45 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Project.Models;
+using AutoMapper;
+using CustomIdentityApp.Models;
+using Project.Helpers;
 
 namespace Project.Controllers
 {
     [Route("api/[controller]")]
-    [ApiController]
-    public class AccountController : Controller
+    public class AccountsController : Controller
     {
+        private readonly ApplicationContext _appDbContext;
         private readonly UserManager<User> _userManager;
-        private readonly SignInManager<User> _signInManager;
+        private readonly IMapper _mapper;
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager)
+        public AccountsController(UserManager<User> userManager, IMapper mapper, ApplicationContext appDbContext)
         {
             _userManager = userManager;
-            _signInManager = signInManager;
+            _mapper = mapper;
+            _appDbContext = appDbContext;
         }
 
-        // GET: api/Account
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET: api/Account/5
-        [HttpGet("{id}", Name = "Get")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
-        // POST: api/Account
+        // POST api/accounts
         [HttpPost]
-        public async void Post([FromBody] User user, string password)
+        public async Task<IActionResult> Post([FromBody]RegistrationModel model)
         {
-            var result = await _userManager.CreateAsync(user, password);
-            if (result.Succeeded)
+            if (!ModelState.IsValid)
             {
-                // установка куки
-                await _signInManager.SignInAsync(user, false);
+                return BadRequest(ModelState);
             }
-            else
-            {
-                foreach (var error in result.Errors)
-                {
-                    ModelState.AddModelError(string.Empty, error.Description);
-                }
-            }
-        }
 
-        // PUT: api/Account/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
-        {
-        }
+            var userIdentity = _mapper.Map<User>(model);
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            var result = await _userManager.CreateAsync(userIdentity, model.Password);
+
+            if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
+
+            await _appDbContext.Customers.AddAsync(new Customer { IdentityId = userIdentity.Id, Location = model.Location });
+            await _appDbContext.SaveChangesAsync();
+
+            return new OkObjectResult("Account created");
         }
     }
 }

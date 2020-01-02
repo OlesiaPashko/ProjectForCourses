@@ -14,6 +14,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Project.Models;
+using AutoMapper;
+using Microsoft.Extensions.DependencyInjection.Extensions;
+using FluentValidation;
+using Project.Models.Mappings;
 
 namespace Project
 {
@@ -35,7 +39,15 @@ namespace Project
             services.AddIdentity<User, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationContext>();
 
+            var mappingConfig = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new ViewModelToDTOMappingProfile());
+            });
+
+            IMapper mapper = mappingConfig.CreateMapper();
+            services.AddSingleton(mapper);
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            //services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
