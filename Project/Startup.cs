@@ -24,6 +24,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using BLL.Services;
 using Swashbuckle.AspNetCore.Swagger;
+using Project.Installers;
 
 namespace Project
 {
@@ -39,53 +40,11 @@ namespace Project
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationContext>(options =>
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            var installers = typeof(Startup).Assembly.ExportedTypes.Where(x =>
+            typeof(IInstaller).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract).Select(Activator.CreateInstance)
+            .Cast<IInstaller>().ToList();
 
-            services.AddIdentity<User, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationContext>();
-
-            var mappingConfig = new MapperConfiguration(mc =>
-            {
-                mc.AddProfile(new ViewModelToDTOMappingProfile());
-            });
-
-            IMapper mapper = mappingConfig.CreateMapper();
-            services.AddSingleton(mapper);
-
-            services.AddScoped<IIdentityService, IdentityService>();
-
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-
-            var jwtSettings = new JwtSettings();
-            this.Configuration.Bind(nameof(jwtSettings), jwtSettings);
-            services.AddSingleton(jwtSettings);
-
-            services.AddAuthentication(x =>
-            {
-                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(x =>
-            {
-                x.SaveToken = true;
-                x.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(jwtSettings.Secret)),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    RequireExpirationTime = false,
-                    ValidateLifetime = true
-
-                };
-            });
-
-            services.AddSwaggerGen(x =>
-            {
-                x.SwaggerDoc("v1", new Info { Title = "Project API", Version = "v1" });
-            });
+            installers.ForEach(installer => installer.InstallServices(Configuration, services));
             //services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         }
 
