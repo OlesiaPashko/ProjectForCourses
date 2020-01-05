@@ -19,6 +19,18 @@ namespace Project.Installers
             services.AddSwaggerGen(x =>
             {
                 x.SwaggerDoc("v1", new Info { Title = "Project API", Version = "v1" });
+                var security = new Dictionary<string, IEnumerable<string>>
+                {
+                    {"Bearer", new string[0] }
+                };
+                x.AddSecurityDefinition("Bearer", new ApiKeyScheme
+                {
+                    Description = "JWT Authorization Header",
+                    Name ="Authorization",
+                    In = "header",
+                    Type= "apiKey"
+                });
+                x.AddSecurityRequirement(security);
             });
         }
     }
