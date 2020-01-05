@@ -16,6 +16,7 @@ using Project.Options;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
+using Project.Contracts.V1.Requests;
 
 namespace Project.Controllers
 {
@@ -39,7 +40,7 @@ namespace Project.Controllers
         // POST api/accounts/register
         [HttpPost]
         [Route("api/account/register")]
-        public async Task<IActionResult> Post([FromBody]RegistrationModel model)
+        public async Task<IActionResult> Post([FromBody]UserModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -47,16 +48,14 @@ namespace Project.Controllers
             }
 
             var userIdentity = _mapper.Map<User>(model);
-
             var result = await _userManager.CreateAsync(userIdentity, model.Password);
-
             if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
-
-            await _appDbContext.Customers.AddAsync(new Customer { IdentityId = userIdentity.Id, Location = model.Location });
+            await _userManager.AddToRoleAsync(userIdentity, "Admin");
             await _appDbContext.SaveChangesAsync();
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
+            var userRoles = await _userManager.GetRolesAsync(userIdentity);
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[]
@@ -64,10 +63,11 @@ namespace Project.Controllers
                     new Claim(JwtRegisteredClaimNames.Sub, userIdentity.Email),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, userIdentity.Email),
-                    new Claim("id", userIdentity.Id)
+                    new Claim("id", userIdentity.Id),
+                    new Claim(ClaimTypes.Role, "Admin")
                 }),
                 Expires = DateTime.UtcNow.AddHours(2),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)                
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);

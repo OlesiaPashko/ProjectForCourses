@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-
+using Project.Contracts.V1.Requests;
 
 namespace Project.Models.Mappings
 {
@@ -11,7 +11,7 @@ namespace Project.Models.Mappings
     {
         public ViewModelToDTOMappingProfile()
         {
-            CreateMap<RegistrationModel, User>().ForMember(au => au.UserName, map => map.MapFrom(vm => vm.Login));
+            CreateMap<UserModel, User>().ForMember(au => au.UserName, map => map.MapFrom(vm => vm.Login));
         }
     }
 }

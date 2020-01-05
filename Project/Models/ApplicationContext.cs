@@ -15,9 +15,6 @@ namespace CustomIdentityApp.Models
         {
             Database.EnsureCreated();
         }
-
-        public DbSet<Customer> Customers { get; set; }
-
         public DbSet<Post> Posts { get; set; }
     }
 }
