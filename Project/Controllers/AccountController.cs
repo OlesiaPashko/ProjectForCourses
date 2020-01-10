@@ -17,6 +17,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Project.Contracts.V1.Requests;
+using Project.Contracts.V1.Responses;
 
 namespace Project.Controllers
 {
@@ -49,8 +50,10 @@ namespace Project.Controllers
 
             var userIdentity = _mapper.Map<User>(model);
             var result = await _userManager.CreateAsync(userIdentity, model.Password);
-            if (!result.Succeeded) return new BadRequestObjectResult(Errors.AddErrorsToModelState(result, ModelState));
-            await _userManager.AddToRoleAsync(userIdentity, "Admin");
+            if (!result.Succeeded) 
+                return new BadRequestObjectResult(new AuthentificationResult {
+                    Token = "", Errors = result.Errors, Success = false });
+            await _userManager.AddToRoleAsync(userIdentity, "User");
             await _appDbContext.SaveChangesAsync();
 
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -64,14 +67,14 @@ namespace Project.Controllers
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                     new Claim(JwtRegisteredClaimNames.Email, userIdentity.Email),
                     new Claim("id", userIdentity.Id),
-                    new Claim(ClaimTypes.Role, "Admin")
+                    new Claim(ClaimTypes.Role, "User")
                 }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)                
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return new OkObjectResult(tokenHandler.WriteToken(token));
+            return new OkObjectResult(new AuthentificationResult{ Token = tokenHandler.WriteToken(token), Errors=result.Errors, Success=result.Succeeded });
         }
 
         // POST api/accounts/login

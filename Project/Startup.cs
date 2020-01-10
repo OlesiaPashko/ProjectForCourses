@@ -59,6 +59,7 @@ namespace Project
             {
                 app.UseHsts();
             }
+            app.UseCors("MyPolicy");
             app.UseAuthentication();
             var swaggerOptions = new Project.Options.SwaggerOptions();
             Configuration.GetSection(nameof(Project.Options.SwaggerOptions)).Bind(swaggerOptions);
