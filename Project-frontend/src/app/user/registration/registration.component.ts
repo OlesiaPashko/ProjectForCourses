@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import {UserService} from './../../shared/user.service'
 import {ToastrService} from 'ngx-toastr'
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-registration',
   templateUrl: './registration.component.html',
@@ -8,7 +10,7 @@ import {ToastrService} from 'ngx-toastr'
 })
 export class RegistrationComponent implements OnInit {
 
-  constructor(public service: UserService, private toastr:ToastrService) { }
+  constructor(public service: UserService, private toastr:ToastrService, private router: Router) { }
 
   ngOnInit() {
   }
@@ -21,33 +23,21 @@ export class RegistrationComponent implements OnInit {
          		localStorage.setItem('Bearer', result.token);
          		console.log(result);}*/
          (res: any) => {
-          console.log(res);
         if (res.success) {
           this.service.formModel.reset();
           localStorage.setItem('Bearer', res.token);
-          console.log(res);
-          this.toastr.success('New user created!', 'Registration successful.');
-        } else {
-          console.log(res);
-          this.toastr.error('element.description','Registration failed.');
-
-          res.error.errors.forEach(element => {
-            switch (element.code) {
-              case 'DuplicateUserName':
-                this.toastr.error('Username is already taken','Registration failed.');
-                console.log('Username is already taken','Registration failed.');
-                break;
-
-              default:
-              this.toastr.error(element.description,'Registration failed.');
-              console.log(element.description)
-                break;
-            }
-          });
+          this.router.navigateByUrl('/home');
         }
       },
       err => {
+        console.log(typeof(err));
         console.log(err);
+        if (err.status == 400){
+          console.log(err);
+          this.toastr.error(err.error.errors[0].description, 'Registration failed.');
+        }
+        else
+          console.log(err);
       }
     );
          //}});

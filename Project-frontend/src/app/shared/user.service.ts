@@ -13,8 +13,9 @@ export class UserService {
 
   formModel = this.fb.group({
   	UserName : ['', Validators.required],
-  	Email : ['', Validators.email],
-  	FullName : [''],
+  	Email : ['', [Validators.email, Validators.required]],
+  	FirstName : [''],
+    LastName: [''],
   	Passwords: this.fb.group({
 		Password : ['', [Validators.required, Validators.minLength(8)]],
   		ConfirmPassword : ['', Validators.required]
@@ -33,15 +34,19 @@ export class UserService {
 
   	register(){
   		var body = {
-      Login: this.formModel.value.UserName,
+      UserName: this.formModel.value.UserName,
       Email: this.formModel.value.Email,
-      Password: this.formModel.value.Passwords.Password
+      Password: this.formModel.value.Passwords.Password,
+      FirstName:this.formModel.value.FirstName,
+      LastName: this.formModel.value.LastName
     };
     console.log(this.http.post(this.BaseURI + '/account/register', body));
     return this.http.post(this.BaseURI + '/account/register', body);
   	}
 
     login(formData) {
-    return this.http.post(this.BaseURI + '/account/login', formData);
+      console.log(formData);
+      console.log(this.http.post(this.BaseURI + '/account/login', formData));
+      return this.http.post(this.BaseURI + '/account/login', formData);
   }
 }

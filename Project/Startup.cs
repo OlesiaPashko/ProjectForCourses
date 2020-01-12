@@ -40,6 +40,7 @@ namespace Project
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddCors();
             var installers = typeof(Startup).Assembly.ExportedTypes.Where(x =>
             typeof(IInstaller).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract).Select(Activator.CreateInstance)
             .Cast<IInstaller>().ToList();
@@ -59,7 +60,7 @@ namespace Project
             {
                 app.UseHsts();
             }
-            app.UseCors("MyPolicy");
+            app.UseCors(options => options.WithOrigins("http://localhost:4200").AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
             var swaggerOptions = new Project.Options.SwaggerOptions();
             Configuration.GetSection(nameof(Project.Options.SwaggerOptions)).Bind(swaggerOptions);

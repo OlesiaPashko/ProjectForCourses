@@ -47,7 +47,10 @@ namespace Project.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+            if (_appDbContext.Users.Any(elem => elem.UserName == model.UserName))
+                return BadRequest(new AuthentificationResult { 
+                    Token = "", Errors = new IdentityError[] { new IdentityError() { Code = "DuplicateUserName", Description = "Username is already taken" } }, 
+                    Success = false});
             var userIdentity = _mapper.Map<User>(model);
             var result = await _userManager.CreateAsync(userIdentity, model.Password);
             if (!result.Succeeded) 
@@ -86,14 +89,14 @@ namespace Project.Controllers
             {
                 return BadRequest(ModelState);
             }
-            var user = await _userManager.FindByEmailAsync(model.Email);
+            var user = await _userManager.FindByNameAsync(model.UserName);
 
             if (user == null) 
                 return new BadRequestObjectResult("User does not exist");
 
             var userHasValidPassword = await _userManager.CheckPasswordAsync(user, model.Password);
             if (!userHasValidPassword)
-                return new BadRequestObjectResult("Combination of email and password is wrong");
+                return new BadRequestObjectResult("Combination of login and password is wrong");
 
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSettings.Secret);
@@ -111,7 +114,7 @@ namespace Project.Controllers
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
-            return new OkObjectResult(tokenHandler.WriteToken(token));
+            return new OkObjectResult(new AuthentificationResult { Token = tokenHandler.WriteToken(token), Errors = null, Success = true });
         }
     }
 }

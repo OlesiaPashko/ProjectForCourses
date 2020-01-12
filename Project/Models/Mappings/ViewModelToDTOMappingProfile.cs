@@ -11,7 +11,7 @@ namespace Project.Models.Mappings
     {
         public ViewModelToDTOMappingProfile()
         {
-            CreateMap<UserModel, User>().ForMember(au => au.UserName, map => map.MapFrom(vm => vm.Login));
+            CreateMap<UserModel, User>().ForMember(au => au.FirstName, map => map.MapFrom(vm => vm.FirstName));
         }
     }
 }

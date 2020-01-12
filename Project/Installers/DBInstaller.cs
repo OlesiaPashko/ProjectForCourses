@@ -27,7 +27,7 @@ namespace Project.Installers
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IUserService, UserService>();
             services.AddAuthorization();
-            services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
+            /*services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {
                 builder.AllowAnyOrigin()
                        .AllowAnyMethod()
@@ -36,7 +36,7 @@ namespace Project.Installers
             services.Configure<MvcOptions>(options =>
             {
                 options.Filters.Add(new CorsAuthorizationFilterFactory("MyPolicy"));
-            });
+            });*/
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
