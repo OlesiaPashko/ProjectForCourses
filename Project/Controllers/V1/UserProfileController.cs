@@ -32,7 +32,9 @@ namespace Project.Controllers.V1
             return new
             {
                 user.UserName,
-                user.Email
+                user.Email,
+                user.FirstName,
+                user.LastName
             };
         }
     }

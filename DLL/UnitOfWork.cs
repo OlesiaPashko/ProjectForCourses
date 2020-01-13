@@ -2,44 +2,55 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using DLL.Entities;
+using DLL.Identity;
 using DLL.Repositories;
-using DLL.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 
 namespace DLL
 {
     public class UnitOfWork : IUnitOfWork
     {
         private DataContext _db;
-        private PostRepository _postRepository;
-        private UserRepository _userRepository;
-        private PhotoRepository _photoRepository;
-        public IPhotoRepository Photos
-        {
-            get
-            {
-                if (_photoRepository == null)
-                    _photoRepository = new PhotoRepository(_db);
-                return _photoRepository;
-            }
-        }
+        private IRepository<Image> _imageRepository;
+        private IRepository<LikeFromUserToImage> _likesFromUserToImageRepository;
+        private IRepository<User> _userRepository;
+        //private UserManager<User> _userManager;
+        //private RoleManager<User> _roleManager;
 
-        public IPostRepository Posts
+        public UnitOfWork(DbContextOptions<DataContext> options)
         {
-            get
-            {
-                if (_postRepository == null)
-                    _postRepository = new PostRepository(_db);
-                return _postRepository;
-            }
+            _db = new DataContext(options);
         }
-
-        public IUserRepository Users
+        public IRepository<User> Users
         {
             get
             {
                 if (_userRepository == null)
-                    _userRepository = new UserRepository(_db);
+                    _userRepository = new Repository<User>(_db);
                 return _userRepository;
+            }
+        }
+
+        public IRepository<LikeFromUserToImage> LikesFromUserToImage
+        {
+            get
+            {
+                if (_likesFromUserToImageRepository == null)
+                    _likesFromUserToImageRepository = new Repository<LikeFromUserToImage>(_db);
+                return _likesFromUserToImageRepository;
+            }
+        }
+
+        public IRepository<Image> Images
+        {
+            get
+            {
+                if (_imageRepository == null)
+                    _imageRepository = new Repository<Image>(_db);
+                return _imageRepository;
             }
         }
 

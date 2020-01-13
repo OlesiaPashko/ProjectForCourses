@@ -18,6 +18,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Security.Claims;
 using Project.Contracts.V1.Requests;
 using Project.Contracts.V1.Responses;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Project.Controllers
 {
@@ -115,6 +117,7 @@ namespace Project.Controllers
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return new OkObjectResult(new AuthentificationResult { Token = tokenHandler.WriteToken(token), Errors = null, Success = true });
+        
         }
     }
 }

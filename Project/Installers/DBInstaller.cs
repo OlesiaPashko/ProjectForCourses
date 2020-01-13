@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using CustomIdentityApp.Models;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Cors.Internal;
@@ -26,6 +27,7 @@ namespace Project.Installers
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IPostService, PostService>();
             services.AddScoped<IUserService, UserService>();
+            //services.AddScoped<IHostingEnvironment, Ho>();
             services.AddAuthorization();
             /*services.AddCors(o => o.AddPolicy("MyPolicy", builder =>
             {

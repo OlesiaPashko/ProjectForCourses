@@ -10,47 +10,62 @@ using Microsoft.EntityFrameworkCore;
 using Project.Contracts.V1.Requests;
 using Project.Extentions;
 using Project.Models;
+using Microsoft.AspNetCore.Hosting;
+using System.Net;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace Project.Controllers.V1
 {
-    [Route("api/[controller]")]
     [ApiController]
-    public class ImagesController : ControllerBase
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    public class ImagesController : Controller
     {
 
         private readonly ApplicationContext _DBcontext;
+        IHostingEnvironment _appEnvironment;
 
-        public ImagesController(ApplicationContext context)
+        public ImagesController(ApplicationContext context, IHostingEnvironment hostingEnvironment)
         {
             _DBcontext = context;
+            _appEnvironment = hostingEnvironment;
         }
 
-        [HttpPost("api/image")]
-        public ActionResult Post([FromForm]RequestWithImage req)
+        [HttpPost, DisableRequestSizeLimit]
+        [Route("api/UploadImage")]
+        public async Task<IActionResult> UploadImage()
         {
-            Post post = new Post { Name = req.Name };//, UserId = HttpContext.GetUserId() };
-            if (req.Image!=null)
+            if (!ModelState.IsValid)
             {
-                byte[] imageData = null;
-                using (var binaryReader = new BinaryReader(req.Image.OpenReadStream()))
-                {
-                    imageData = binaryReader.ReadBytes((int)req.Image.Length);
-                }
-                post.Image = imageData;
-                _DBcontext.Posts.Add(post);
-                _DBcontext.SaveChanges();
-                return Ok(new { message = "Image Posted Successfully" });
+                return BadRequest(ModelState);
             }
-            else
+            var file = Request.Form.Files.GetFile("Image");
+            var userId = HttpContext.GetUserId();
+            var login = _DBcontext.Users.FirstOrDefault(user => user.Id == userId).UserName;
+            if (!Directory.Exists(_appEnvironment.WebRootPath + @"\Images\" + login))
             {
-                return BadRequest("Image was added not correct");
+                Directory.CreateDirectory(_appEnvironment.WebRootPath + @"\Images\" + login);
             }
+            //Upload Image
+            var postedFile = file;
+            //Create custom filename
+            var imageName = new String(Path.GetFileNameWithoutExtension(postedFile.FileName).Take(10).ToArray()).Replace(" ", "-");
+            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(postedFile.FileName);
+            string path = @"\Images\" + login + @"\" + imageName;
+            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+            {
+                await file.CopyToAsync(fileStream);
+            }
+            Image image = new Image { Path = path, Like = 0};
+            _DBcontext.Images.Add(image);
+            _DBcontext.SaveChanges();
+            return Ok("image was added");
         }
 
         [HttpGet("api/images")]
         public async Task<IActionResult> GetAll()
         {
-            var posts = await _DBcontext.Posts.ToListAsync();
+            var posts = await _DBcontext.Images.ToListAsync();
             return Ok(posts);
         }
     }

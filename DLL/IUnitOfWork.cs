@@ -1,6 +1,6 @@
 ﻿using DLL.Entities;
 using DLL.Repositories;
-using DLL.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,9 +10,11 @@ namespace DLL
 {
     public interface IUnitOfWork : IDisposable
     {
-        IPhotoRepository Photos { get; }
-        IPostRepository Posts { get; }
-        IUserRepository Users { get; }
+        IRepository<User> Users { get; }
+        IRepository<Image> Images { get; }
+        IRepository<LikeFromUserToImage> LikesFromUserToImage { get; }
+        //UserManager<User> UserManager { get; }
+        //RoleManager<User> RoleManager { get; }
         Task<int> CommitAsync();
     }
 }

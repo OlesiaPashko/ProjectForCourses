@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {FormBuilder, Validators, FormGroup} from '@angular/forms';
-import {HttpClient} from '@angular/common/http'
+import {HttpClient, HttpHeaders} from '@angular/common/http'
 
 @Injectable({
   providedIn: 'root'
@@ -40,13 +40,18 @@ export class UserService {
       FirstName:this.formModel.value.FirstName,
       LastName: this.formModel.value.LastName
     };
+    console.log(body);
     console.log(this.http.post(this.BaseURI + '/account/register', body));
     return this.http.post(this.BaseURI + '/account/register', body);
   	}
 
     login(formData) {
-      console.log(formData);
-      console.log(this.http.post(this.BaseURI + '/account/login', formData));
+      //console.log(formData);
+      //console.log(this.http.post(this.BaseURI + '/account/login', formData));
       return this.http.post(this.BaseURI + '/account/login', formData);
+  }
+
+  getUserProfile() {
+    return this.http.get(this.BaseURI + '/UserProfile');
   }
 }

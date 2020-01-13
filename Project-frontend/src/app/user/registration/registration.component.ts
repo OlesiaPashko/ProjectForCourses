@@ -25,7 +25,7 @@ export class RegistrationComponent implements OnInit {
          (res: any) => {
         if (res.success) {
           this.service.formModel.reset();
-          localStorage.setItem('Bearer', res.token);
+          localStorage.setItem('token', res.token);
           this.router.navigateByUrl('/home');
         }
       },

@@ -8,7 +8,10 @@ namespace Project.Contracts.V1.Requests
 {
     public class RequestWithImage
     {
+        public string ImageCaption { get; set; }
         public string Name { get; set; }
         public IFormFile Image { get; set; }
+
     }
+
 }

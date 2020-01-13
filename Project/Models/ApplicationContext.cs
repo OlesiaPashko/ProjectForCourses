@@ -16,5 +16,7 @@ namespace CustomIdentityApp.Models
             Database.EnsureCreated();
         }
         public DbSet<Post> Posts { get; set; }
+
+        public DbSet<Image> Images { get; set; }
     }
 }

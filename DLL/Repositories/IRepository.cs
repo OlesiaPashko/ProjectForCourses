@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DLL.Repositories.Interfaces
+namespace DLL.Repositories
 {
     public interface IRepository<TEntity> where TEntity:class
     {

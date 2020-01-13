@@ -1,5 +1,4 @@
-﻿using DLL.Repositories.Interfaces;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -57,3 +56,4 @@ namespace DLL.Repositories
             return Context.Set<TEntity>().SingleOrDefaultAsync(predicate);
         }
     }
+}
