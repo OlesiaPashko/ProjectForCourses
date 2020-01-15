@@ -1,4 +1,5 @@
-﻿using BLL.DTOs;
+﻿using AutoMapper;
+using BLL.DTOs;
 using DLL;
 using DLL.Entities;
 using Microsoft.AspNetCore.Http;
@@ -14,11 +15,31 @@ namespace BLL.Services
     public class ImageService:IImageService
     {
         private IUnitOfWork _unitOfWork;
+        private IMapper _mapper;
 
-        public ImageService(IUnitOfWork unitOfWork)
+        public ImageService(IUnitOfWork unitOfWork, IMapper mapper)
         {
             _unitOfWork = unitOfWork;
+            _mapper = mapper;
         }
+
+        public async Task<IEnumerable<ImageDTO>> getAllAsync()
+        {
+            return _mapper.Map< List<Image> , List<ImageDTO>>(await _unitOfWork.Images.GetAllAsync());   
+        }
+
+        /*public File getFIleAsync(string path)
+        {
+            byte[] mas = File.ReadAllBytes(path);
+            string extention = Path.GetExtension(path);
+            string type = "png";
+            if (extention == "jpg")
+                type = "jpeg";
+            string file_type = "application/" + type;
+            // Имя файла - необязательно
+            string file_name = Path.GetFileName(path);
+            return File(mas, file_type, file_name);
+        }*/
         public async Task<bool> UploadImage(string userId, IFormFile file, ImageDTO imageDTO)
         {
             var login = (await _unitOfWork.Users.SingleOrDefaultAsync(user => user.Id == userId)).UserName;
@@ -41,5 +62,10 @@ namespace BLL.Services
             await _unitOfWork.Images.AddAsync(image);
             return (await _unitOfWork.CommitAsync()>0);
         }
+        /*
+        Task<List<ImageDTO>> IImageService.getAllAsync()
+        {
+            throw new NotImplementedException();
+        }*/
     }
 }

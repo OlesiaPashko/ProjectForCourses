@@ -15,9 +15,11 @@ namespace BLL.Installers
             DBInstaller dBInstaller = new DBInstaller();
             JwtInstaller jwtInstaller = new JwtInstaller();
             MapperInstaller mapperInstaller = new MapperInstaller();
+            ServicesInstaller servicesInstaller = new ServicesInstaller();
             dBInstaller.InstallServices(configuration, services);
             jwtInstaller.InstallServices(configuration, services);
             mapperInstaller.InstallServices(configuration, services);
+            servicesInstaller.InstallServices(configuration, services);
         }
 
         /*public async Task<Task> MakeRoles(IServiceScope serviceScope)

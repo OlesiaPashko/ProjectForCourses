@@ -40,8 +40,6 @@ export class UserService {
       FirstName:this.formModel.value.FirstName,
       LastName: this.formModel.value.LastName
     };
-    console.log(body);
-    console.log(this.http.post(this.BaseURI + '/account/register', body));
     return this.http.post(this.BaseURI + '/account/register', body);
   	}
 

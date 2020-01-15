@@ -15,12 +15,6 @@ export class UploadImageService {
     formData.append('Image', fileToUpload);
     formData.append('Name', fileToUpload.name);
     formData.append('ImageCaption', caption);
-    console.log(formData);
-    console.log(formData.get('Image'))
-    console.log(formData.get('Name'))
-    console.log(formData.get('ImageCaption'))
-    console.log(this.http
-      .post(endpoint, formData));
     return this.http
       .post(endpoint, formData, {responseType: 'text'});
   }

@@ -11,5 +11,9 @@ namespace BLL.Services
     {
         Task<bool> UploadImage(string userId, IFormFile file, ImageDTO imageDTO);
 
+        //Task<List<ImageDTO>> getAllAsync();
+
+        //Task<IFormFile> getFIleAsync();
+
     }
 }

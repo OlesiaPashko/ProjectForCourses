@@ -9,8 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Project.Contracts.V1.Requests;
-using Project.Models;
-using Project.Services;
+using BLL.Services;
+using BLL.DTOs;
 
 namespace Project.Controllers.V1
 {
@@ -26,14 +26,38 @@ namespace Project.Controllers.V1
             _userService = userService;
             _mapper = mapper;
         }
-        // GET: api/Posts
+
+        private UserModel UserDTOToUserModel(UserDTO userDTO)
+        {
+            return new UserModel
+            {
+                FirstName = userDTO.FirstName,
+                LastName = userDTO.LastName,
+                UserName = userDTO.UserName,
+                Email = userDTO.Email,
+                Password = userDTO.Password
+            };
+        }
+
+        private UserDTO UserModelToUserDTO(UserModel user)
+        {
+            return new UserDTO
+            {
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                Email = user.Email,
+                Password = user.Password
+            };
+        }
+        // GET: api/Users
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             return Ok(await _userService.GetUsersAsync());
         }
 
-        // GET: api/Posts/5
+        // GET: api/Users/5
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
@@ -44,18 +68,16 @@ namespace Project.Controllers.V1
             return Ok(post);
         }
 
-        // POST: api/Posts
+        // POST: api/Users
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] UserModel userModel)
         {
-            var user = _mapper.Map<User>(userModel);
+            var user = UserModelToUserDTO(userModel);
             await _userService.CreateUserAsync(user);
-            var baseUrl = $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.ToUriComponent()}";
-            var localUri = baseUrl + "/Api/Users/" + user.Id;
-            return Created(localUri, user.Id);
+            return Ok("User was created");
         }
 
-        // PUT: api/Posts/5
+        // PUT: api/Users/5
         [HttpPut("{userId}")]
         public async Task<IActionResult> Put(Guid userId, [FromBody] UserModel updatedUser)
         {
@@ -66,8 +88,8 @@ namespace Project.Controllers.V1
             return NotFound();
         }
 
-        // DELETE: api/ApiWithActions/5
-        [HttpDelete("{userId}")]
+        // DELETE: api/Users/4
+        [HttpDelete]
         public async Task<IActionResult> Delete(Guid userId)
         {
             var isDeleted = await _userService.DeleteUserAsync(userId);

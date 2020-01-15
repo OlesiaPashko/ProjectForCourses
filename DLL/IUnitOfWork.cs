@@ -13,8 +13,6 @@ namespace DLL
         IRepository<User> Users { get; }
         IRepository<Image> Images { get; }
         IRepository<UserImage> LikesFromUserToImage { get; }
-        //UserManager<User> UserManager { get; }
-        //RoleManager<User> RoleManager { get; }
         Task<int> CommitAsync();
     }
 }

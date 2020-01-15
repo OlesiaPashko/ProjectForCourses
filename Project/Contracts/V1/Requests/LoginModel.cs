@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Project.Models
+namespace Project.Contracts.V1.Requests
 {
     public class LoginModel
     {

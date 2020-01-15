@@ -22,11 +22,6 @@ namespace BLL.Installers
 
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DataContext>().AddRoles<IdentityRole>()
                 .AddDefaultTokenProviders();
-            services.AddScoped<IAccountService, AccountService>();
-            services.AddScoped<IUserProfileService, UserProfileService>();
-            services.AddScoped<IImageService, ImageService>();
-           // services.AddScoped<IPostService, PostService>();
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<IdentityOptions>(options =>
             {
                 options.Password.RequireDigit = false;
@@ -36,21 +31,5 @@ namespace BLL.Installers
                 options.Password.RequiredLength = 8;
             });
         }
-
-        /*public async Task MakeRoles(IServiceScope serviceScope)
-        {
-            var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<User>>();
-                var admin = new IdentityRole("Admin");
-            Console.WriteLine((await roleManager.CreateAsync(admin)).Succeeded);
-            foreach (var error in ((await roleManager.CreateAsync(admin)).Errors))
-            {
-                Console.WriteLine($"ERROR CODE - {error.Code}");
-                Console.WriteLine($"ERROR DESCRIPTION - {error.Description}");
-            }
-
-            var user = new IdentityRole("User");
-                await roleManager.CreateAsync(user);
-        }*/
     }
 }

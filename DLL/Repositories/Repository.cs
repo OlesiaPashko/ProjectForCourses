@@ -21,7 +21,7 @@ namespace DLL.Repositories
             await Context.Set<TEntity>().AddAsync(entity);
         }
 
-        public async Task AddRangeAsync(IEnumerable<TEntity> entities)
+        public async Task AddRangeAsync(List<TEntity> entities)
         {
             await Context.Set<TEntity>().AddRangeAsync(entities);
         }
@@ -31,7 +31,7 @@ namespace DLL.Repositories
             return Context.Set<TEntity>().Where(predicate);
         }
 
-        public async Task<IEnumerable<TEntity>> GetAllAsync()
+        public async Task<List<TEntity>> GetAllAsync()
         {
             return await Context.Set<TEntity>().ToListAsync();
         }
@@ -46,7 +46,7 @@ namespace DLL.Repositories
             Context.Set<TEntity>().Remove(entity);
         }
 
-        public void RemoveRange(IEnumerable<TEntity> entities)
+        public void RemoveRange(List<TEntity> entities)
         {
             Context.Set<TEntity>().RemoveRange(entities);
         }

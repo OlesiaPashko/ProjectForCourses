@@ -16,9 +16,6 @@ namespace DLL
         private IRepository<Image> _imageRepository;
         private IRepository<UserImage> _likesFromUserToImageRepository;
         private IRepository<User> _userRepository;
-        //private IRepository<Role> _roleRepository;
-        //private UserManager<User> _userManager;
-        //private RoleManager<User> _roleManager;
 
         public UnitOfWork(DbContextOptions<DataContext> options)
         {
