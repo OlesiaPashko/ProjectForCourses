@@ -12,10 +12,5 @@ namespace DLL.Entities
         public Guid Id { get; set; }
         public string Path { get; set; }
         public string Caption { get; set; }
-        public List<User> Users { get; set; }
-        public Image()
-        {
-            Users = new List<User>();
-        }
     }
 }

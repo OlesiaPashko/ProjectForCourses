@@ -36,8 +36,10 @@ export class RegistrationComponent implements OnInit {
           console.log(err);
           this.toastr.error(err.error.errors[0].description, 'Registration failed.');
         }
-        else
+        else{
+          this.toastr.error(err.error, 'Registration failed ...');
           console.log(err);
+        }
       }
     );
          //}});

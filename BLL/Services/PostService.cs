@@ -2,15 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CustomIdentityApp.Models;
 using Microsoft.EntityFrameworkCore;
-using Project.Models;
 
-namespace Project.Services
+namespace BLL.Services
 {
     public class PostService : IPostService
     {
-        private readonly ApplicationContext _DBcontext;
+        /*private readonly ApplicationContext _DBcontext;
 
         public PostService(ApplicationContext context)
         {
@@ -58,6 +56,6 @@ namespace Project.Services
                 return false;
             }
             return true;
-        }
+        }*/
     }
 }

@@ -15,8 +15,9 @@ namespace DLL
     {
         private DataContext _db;
         private IRepository<Image> _imageRepository;
-        private IRepository<LikeFromUserToImage> _likesFromUserToImageRepository;
+        private IRepository<UserImage> _likesFromUserToImageRepository;
         private IRepository<User> _userRepository;
+        //private IRepository<Role> _roleRepository;
         //private UserManager<User> _userManager;
         //private RoleManager<User> _roleManager;
 
@@ -34,12 +35,12 @@ namespace DLL
             }
         }
 
-        public IRepository<LikeFromUserToImage> LikesFromUserToImage
+        public IRepository<UserImage> LikesFromUserToImage
         {
             get
             {
                 if (_likesFromUserToImageRepository == null)
-                    _likesFromUserToImageRepository = new Repository<LikeFromUserToImage>(_db);
+                    _likesFromUserToImageRepository = new Repository<UserImage>(_db);
                 return _likesFromUserToImageRepository;
             }
         }

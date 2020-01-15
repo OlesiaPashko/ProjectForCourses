@@ -1,4 +1,4 @@
-﻿using CustomIdentityApp.Models;
+﻿
 using Microsoft.EntityFrameworkCore;
 using Project.Models;
 using System;
@@ -8,9 +8,9 @@ using System.Threading.Tasks;
 
 namespace Project.Services
 {
-    public class UserService:IUserService
+    public class UserService//:IUserService
     {
-        private readonly ApplicationContext _DBcontext;
+        /*private readonly ApplicationContext _DBcontext;
 
         public UserService(ApplicationContext context)
         {
@@ -46,6 +46,6 @@ namespace Project.Services
             _DBcontext.Users.Update(user);
             var updatedCount = await _DBcontext.SaveChangesAsync();
             return updatedCount > 0;
-        }
+        }*/
     }
 }

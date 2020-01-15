@@ -15,6 +15,7 @@ namespace DLL
             Database.EnsureCreated();
         }
         public DbSet<Image> Images { get; set; }
-        public DbSet<LikeFromUserToImage> LikesFromUserToImage { get; set; }
+        public DbSet<UserImage> UserImages { get; set; }
+
     }
 }

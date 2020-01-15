@@ -5,8 +5,9 @@ using System.Text;
 
 namespace DLL.Entities
 {
-    public class Role:IdentityRole
+    public class UserRole:IdentityRole
     {
-        public virtual IEnumerable<UserRole> UserRoles { get; set; }
+        public virtual User User { get; set; }
+        public virtual Role Role { get; set; }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using CustomIdentityApp.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -22,9 +21,10 @@ using Project.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using BLL.Services;
+//using BLL.Services;
 using Swashbuckle.AspNetCore.Swagger;
 using Project.Installers;
+using BLL.Installers;
 
 namespace Project
 {
@@ -41,11 +41,16 @@ namespace Project
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddCors();
-            var installers = typeof(Startup).Assembly.ExportedTypes.Where(x =>
-            typeof(IInstaller).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract).Select(Activator.CreateInstance)
-            .Cast<IInstaller>().ToList();
+            MainInstaller mainInstaller = new MainInstaller();
+            mainInstaller.InstallServices(Configuration, services);
 
-            installers.ForEach(installer => installer.InstallServices(Configuration, services));
+            services.AddAuthorization();
+
+            var installersFromPresentation = typeof(Startup).Assembly.ExportedTypes.Where(x =>
+            typeof(Installers.IInstaller).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract).Select(Activator.CreateInstance)
+            .Cast<Installers.IInstaller>().ToList();
+
+            installersFromPresentation.ForEach(installer => installer.InstallServices(Configuration, services));
             //services.AddMvc().AddFluentValidation(fv => fv.RegisterValidatorsFromAssemblyContaining<Startup>());
         }
 

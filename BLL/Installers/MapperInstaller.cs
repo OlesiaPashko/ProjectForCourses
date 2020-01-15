@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Project.Models.Mappings;
+using BLL.Mappings;
 
-namespace Project.Installers
+namespace BLL.Installers
 {
     public class MapperInstaller : IInstaller
     {
@@ -15,7 +15,7 @@ namespace Project.Installers
         {
             var mappingConfig = new MapperConfiguration(mc =>
             {
-                mc.AddProfile(new Project.Models.Mappings.ViewModelToDTOMappingProfile());
+                mc.AddProfile(new EntityToDTOMappingProfile());
             });
 
             IMapper mapper = mappingConfig.CreateMapper();

@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using Project.Options;
+using BLL.Options;
 
-namespace Project.Installers
+namespace BLL.Installers
 {
     public class JwtInstaller : IInstaller
     {

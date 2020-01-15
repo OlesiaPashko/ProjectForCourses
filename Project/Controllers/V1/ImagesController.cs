@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using CustomIdentityApp.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +21,7 @@ namespace Project.Controllers.V1
     public class ImagesController : Controller
     {
 
-        private readonly ApplicationContext _DBcontext;
+        /*private readonly ApplicationContext _DBcontext;
         IHostingEnvironment _appEnvironment;
 
         public ImagesController(ApplicationContext context, IHostingEnvironment hostingEnvironment)
@@ -67,6 +66,6 @@ namespace Project.Controllers.V1
         {
             var posts = await _DBcontext.Images.ToListAsync();
             return Ok(posts);
-        }
+        }*/
     }
 }
