@@ -47,6 +47,18 @@ namespace BLL.Services
             return tokenHandler.WriteToken(token);
         }
 
+        
+
+        public AccountService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IUnitOfWork unitOfWork, 
+            JwtSettings jwtSettings, IMapper mapper)
+        {
+            _userManager = userManager;
+            _roleManager = roleManager;
+            _unitOfWork = unitOfWork;
+            _mapper = mapper;
+            _jwtSettings = jwtSettings;
+        }
+
         private async void CreateRoles()
         {
             if (!await _roleManager.RoleExistsAsync("Admin"))
@@ -59,16 +71,6 @@ namespace BLL.Services
                 var user = new IdentityRole("User");
                 await _roleManager.CreateAsync(user);
             }
-        }
-
-        public AccountService(UserManager<User> userManager, RoleManager<IdentityRole> roleManager, IUnitOfWork unitOfWork, 
-            JwtSettings jwtSettings, IMapper mapper)
-        {
-            _userManager = userManager;
-            _roleManager = roleManager;
-            _unitOfWork = unitOfWork;
-            _mapper = mapper;
-            _jwtSettings = jwtSettings;
         }
 
         public async Task<AuthentificationResultDTO> RegisterAsync(UserDTO userDTO)

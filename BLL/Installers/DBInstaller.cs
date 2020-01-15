@@ -23,6 +23,8 @@ namespace BLL.Installers
             services.AddIdentity<User, IdentityRole>().AddEntityFrameworkStores<DataContext>().AddRoles<IdentityRole>()
                 .AddDefaultTokenProviders();
             services.AddScoped<IAccountService, AccountService>();
+            services.AddScoped<IUserProfileService, UserProfileService>();
+            services.AddScoped<IImageService, ImageService>();
            // services.AddScoped<IPostService, PostService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.Configure<IdentityOptions>(options =>

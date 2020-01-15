@@ -13,6 +13,8 @@ using Microsoft.AspNetCore.Hosting;
 using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using BLL.Services;
+using BLL.DTOs;
 
 namespace Project.Controllers.V1
 {
@@ -21,12 +23,12 @@ namespace Project.Controllers.V1
     public class ImagesController : Controller
     {
 
-        /*private readonly ApplicationContext _DBcontext;
+        private readonly IImageService _imageService;
         IHostingEnvironment _appEnvironment;
 
-        public ImagesController(ApplicationContext context, IHostingEnvironment hostingEnvironment)
+        public ImagesController(IImageService imageService, IHostingEnvironment hostingEnvironment)
         {
-            _DBcontext = context;
+            _imageService = imageService;
             _appEnvironment = hostingEnvironment;
         }
 
@@ -39,29 +41,20 @@ namespace Project.Controllers.V1
                 return BadRequest(ModelState);
             }
             var file = Request.Form.Files.GetFile("Image");
+            var caption = String.Format("{0}", Request.Form["ImageCaption"]);
             var userId = HttpContext.GetUserId();
-            var login = _DBcontext.Users.FirstOrDefault(user => user.Id == userId).UserName;
-            if (!Directory.Exists(_appEnvironment.WebRootPath + @"\Images\" + login))
+            bool success = await _imageService.UploadImage(userId, file, new ImageDTO { Path = _appEnvironment.WebRootPath, Caption = caption });
+            if(success)
             {
-                Directory.CreateDirectory(_appEnvironment.WebRootPath + @"\Images\" + login);
+                return Ok("image was added");
             }
-            //Upload Image
-            var postedFile = file;
-            //Create custom filename
-            var imageName = new String(Path.GetFileNameWithoutExtension(postedFile.FileName).Take(10).ToArray()).Replace(" ", "-");
-            imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(postedFile.FileName);
-            string path = @"\Images\" + login + @"\" + imageName;
-            using (var fileStream = new FileStream(_appEnvironment.WebRootPath + path, FileMode.Create))
+            else
             {
-                await file.CopyToAsync(fileStream);
+                return BadRequest("Image can not be added");
             }
-            Image image = new Image { Path = path, Like = 0};
-            _DBcontext.Images.Add(image);
-            _DBcontext.SaveChanges();
-            return Ok("image was added");
         }
 
-        [HttpGet("api/images")]
+       /*( [HttpGet("api/images")]
         public async Task<IActionResult> GetAll()
         {
             var posts = await _DBcontext.Images.ToListAsync();
