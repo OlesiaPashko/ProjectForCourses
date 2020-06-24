@@ -42,7 +42,8 @@ namespace BLL.Services
         }*/
         public async Task<bool> UploadImage(string userId, IFormFile file, ImageDTO imageDTO)
         {
-            var login = (await _unitOfWork.Users.SingleOrDefaultAsync(user => user.Id == userId)).UserName;
+            var user = await _unitOfWork.Users.SingleOrDefaultAsync(u => u.Id == userId);
+            var login = user.UserName;
             var rootPath = imageDTO.Path;
             if (!Directory.Exists(rootPath + @"\Images\" + login))
             {
@@ -60,6 +61,7 @@ namespace BLL.Services
             }
             Image image = new Image { Path = path, Caption = imageDTO.Caption, Id = new Guid()};
             await _unitOfWork.Images.AddAsync(image);
+            await _unitOfWork.LikesFromUserToImage.AddAsync(new UserImage { Image = image, User = user });
             return (await _unitOfWork.CommitAsync()>0);
         }
         /*

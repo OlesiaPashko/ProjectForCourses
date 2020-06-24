@@ -10,7 +10,7 @@
         </div>
         <img [src]="imageUrl"  style="width:250px;height:200px">
         <input type="file" #Image accept="image/*" (change)="handleFileInput($event.target.files)">
-        <button type="submit" class="btn-large btn-submit" [disabled]="Image.value=='' || !imageForm.valid">Submit</button>
+        <button type="submit" class="btn-large btn-submit" [disabled]="Image.value==''">Submit</button>
       </form>
     </div>
   </div>

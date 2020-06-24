@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Text;
+using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace DLL.Entities
 {
@@ -10,7 +10,13 @@ namespace DLL.Entities
         [Key]
         public Guid Id { get; set; }
         public Guid ImageId { get; set; }
+
+        [ForeignKey(nameof(ImageId))]
         public Image Image { get; set; }
+        public string UserId { get; set; }
+
+        [ForeignKey(nameof(UserId))]
+        public User User { get; set; }
 
     }
 }

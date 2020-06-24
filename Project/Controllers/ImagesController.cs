@@ -56,53 +56,67 @@ namespace Project.Controllers.V1
             }
         }
 
-       /* [HttpGet]
-        public async Task<IActionResult> Get()
+        [HttpGet("api/image")]
+        public ActionResult Images()
         {
             var userId = HttpContext.GetUserId();
-            string login = (await _userService.GetUserByIdAsync(Guid.Parse(userId))).UserName;
-            var images = await _imageService.getAllAsync();
-            foreach(var item in images)
+            var dir = _appEnvironment.WebRootPath + @"\Images\stringwetst";
+            var path = Path.Combine(dir, "2016-04-03202240794.jpg");
+            if (System.IO.File.Exists(path))
             {
-                var image = System.IO.File.OpenRead("C:\\test\\random_image.jpeg");
-                return File(image, "image/jpeg");
-            }
-            var image = System.IO.File.OpenRead("C:\\test\\random_image.jpeg");
-            return File(image, "image/jpeg");
-        }
-
-        [HttpGet("api/images")]
-        public async Task<IActionResult> GetAll()
-        {
-            var userId = HttpContext.GetUserId();
-            var images =await _imageService.getAllAsync();
-            foreach(var image in images)
-            {
-                using (FileStream fstream = File.OpenRead(image.Path))
-                {
-                    byte[] array = new byte[fstream.Length];
-                    fstream.Read(array, 0, array.Length);
-
-                }
-                byte[] mas = File.ReadAllBytes(image.Path);
-                string extention = Path.GetExtension(image.Path);
-                string type = "png";
-                if (extention == "jpg")
-                    type = "jpeg";
-                string file_type = "application/" + type;
-                // Имя файла - необязательно
-                string file_name = Path.GetFileName(path);
-                return File(mas, file_type, file_name);
-            }
-            
-            if (success)
-            {
-                return Ok("image was added");
+                var fs = System.IO.File.OpenRead(path);
+                return File(fs, "image/jpeg", "2016-04-03202240794.jpg");
             }
             else
-            {
-                return BadRequest("Image can not be added");
-            }
-        }*/
+                return NotFound();
+        }
+        /*[HttpGet]
+         public async Task<IActionResult> Get()
+         {
+             var userId = HttpContext.GetUserId();
+             string login = (await _userService.GetUserByIdAsync(Guid.Parse(userId))).UserName;
+             var images = await _imageService.getAllAsync();
+             foreach(var item in images)
+             {
+                 var image = System.IO.File.OpenRead("C:\\test\\random_image.jpeg");
+                 return File(image, "image/jpeg");
+             }
+             var image = System.IO.File.OpenRead("C:\\test\\random_image.jpeg");
+             return File(image, "image/jpeg");
+         }
+
+         [HttpGet("api/images")]
+         public async Task<IActionResult> GetAll()
+         {
+             var userId = HttpContext.GetUserId();
+             var images =await _imageService.getAllAsync();
+             foreach(var image in images)
+             {
+                 using (FileStream fstream = File.OpenRead(image.Path))
+                 {
+                     byte[] array = new byte[fstream.Length];
+                     fstream.Read(array, 0, array.Length);
+
+                 }
+                 byte[] mas = File.ReadAllBytes(image.Path);
+                 string extention = Path.GetExtension(image.Path);
+                 string type = "png";
+                 if (extention == "jpg")
+                     type = "jpeg";
+                 string file_type = "application/" + type;
+                 // Имя файла - необязательно
+                 string file_name = Path.GetFileName(path);
+                 return File(mas, file_type, file_name);
+             }
+
+             if (success)
+             {
+                 return Ok("image was added");
+             }
+             else
+             {
+                 return BadRequest("Image can not be added");
+             }
+         }*/
     }
 }

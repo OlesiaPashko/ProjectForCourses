@@ -62,7 +62,7 @@ namespace BLL.Services
             _jwtSettings = jwtSettings;
         }
 
-        private async void CreateRoles()
+        private async Task CreateRoles()
         {
             if (!await _roleManager.RoleExistsAsync("Admin"))
             {
@@ -78,7 +78,7 @@ namespace BLL.Services
 
         public async Task<AuthentificationResultDTO> RegisterAsync(UserDTO userDTO)
         {
-            CreateRoles();
+            await CreateRoles();
             if (_unitOfWork.Users.Find(elem => elem.UserName == userDTO.UserName).Count(x=>x==x) > 0)
                 return new AuthentificationResultDTO
                 {
