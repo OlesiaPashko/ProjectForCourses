@@ -35,7 +35,7 @@ namespace Project.Controllers.V1
         }
 
         [HttpPost, DisableRequestSizeLimit]
-        [Route("api/UploadImage")]
+        [Route("api/images/UploadImage")]
         public async Task<IActionResult> UploadImage()
         {
             if (!ModelState.IsValid)
@@ -56,19 +56,21 @@ namespace Project.Controllers.V1
             }
         }
 
-        [HttpGet("api/image")]
-        public ActionResult Images()
+        [HttpGet("api/images/{id}")]
+        public async Task<IActionResult> Get(Guid id)
         {
             var userId = HttpContext.GetUserId();
-            var dir = _appEnvironment.WebRootPath + @"\Images\stringwetst";
-            var path = Path.Combine(dir, "2016-04-03202240794.jpg");
-            if (System.IO.File.Exists(path))
+            var rootPath = _appEnvironment.WebRootPath;// + @"\Images\test";
+            var getImageDTO = await _imageService.GetImage(userId, id, rootPath);
+            if (!getImageDTO.Success)
             {
-                var fs = System.IO.File.OpenRead(path);
-                return File(fs, "image/jpeg", "2016-04-03202240794.jpg");
+                if(getImageDTO.Error== "it`s not your photo")
+                {
+                    return BadRequest(getImageDTO.Error);
+                }
+                return NotFound(getImageDTO.Error);
             }
-            else
-                return NotFound();
+            return File(getImageDTO.FileStream, "image/jpeg", "Image.jpg");
         }
         /*[HttpGet]
          public async Task<IActionResult> Get()

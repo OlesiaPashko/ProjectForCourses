@@ -64,6 +64,30 @@ namespace BLL.Services
             await _unitOfWork.LikesFromUserToImage.AddAsync(new UserImage { Image = image, User = user });
             return (await _unitOfWork.CommitAsync()>0);
         }
+
+        public async Task<GetImageDTO> GetImage(string userId, Guid imageId, string rootPath)
+        {
+            var photo = await _unitOfWork.Images.SingleOrDefaultAsync(im => im.Id == imageId);
+            var user = await _unitOfWork.Users.SingleOrDefaultAsync(u => u.Id == userId);
+            if (photo == null || user == null)
+                return new GetImageDTO { Success=false, Error = "Id is wrong"};
+            var login = user.UserName;
+            var pathToPhoto = rootPath + photo.Path;
+            var pathToDirectory = pathToPhoto.Substring(0, pathToPhoto.LastIndexOf('\\'));
+            var pathToDirectoryForCurrentUser = rootPath + @"\Images\" + login;
+            if (!pathToDirectoryForCurrentUser.Equals(pathToDirectory))
+            {
+                return new GetImageDTO { Success = false, Error = "it`s not your photo" };
+            }
+            if (!Directory.Exists(pathToDirectory) || !File.Exists(pathToPhoto))
+            {
+                return new GetImageDTO { Success = false, Error = "Photo doesn`t exist" };
+            }
+
+            return new GetImageDTO { Success = true, FileStream = File.OpenRead(pathToPhoto) };
+        }
+
+
         /*
         Task<List<ImageDTO>> IImageService.getAllAsync()
         {
