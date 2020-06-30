@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -54,7 +55,7 @@ namespace BLL.Services
             //Create custom filename
             var imageName = new String(Path.GetFileNameWithoutExtension(postedFile.FileName).Take(10).ToArray()).Replace(" ", "-");
             imageName = imageName + DateTime.Now.ToString("yymmssfff") + Path.GetExtension(postedFile.FileName);
-            string path = @"\Images\" + login + @"\" + imageName;
+            string path = Path.Combine("Images", login, imageName);
             using (var fileStream = new FileStream(rootPath + path, FileMode.Create))
             {
                 await file.CopyToAsync(fileStream);
@@ -65,7 +66,7 @@ namespace BLL.Services
             return (await _unitOfWork.CommitAsync()>0);
         }
 
-        public async Task<GetImageDTO> GetImage(string userId, Guid imageId, string rootPath)
+        public async Task<GetImageDTO> GetImageAsync(string userId, Guid imageId, string rootPath)
         {
             var photo = await _unitOfWork.Images.SingleOrDefaultAsync(im => im.Id == imageId);
             var user = await _unitOfWork.Users.SingleOrDefaultAsync(u => u.Id == userId);
@@ -87,11 +88,19 @@ namespace BLL.Services
             return new GetImageDTO { Success = true, FileStream = File.OpenRead(pathToPhoto) };
         }
 
-
-        /*
-        Task<List<ImageDTO>> IImageService.getAllAsync()
+        public async Task<GetImageDTO> GetAllImagesAsZipAsync(string userId, string rootPath)
         {
-            throw new NotImplementedException();
-        }*/
+            var user = await _unitOfWork.Users.SingleOrDefaultAsync(u => u.Id == userId);
+            if (user == null)
+                return new GetImageDTO { Success = false, Error = "there is no such user" };
+            var pathToDir = Path.Combine(rootPath , "Images", user.UserName);
+            if (!Directory.Exists(pathToDir))
+            {
+                return new GetImageDTO { Success = false, Error = "There is no directory for this user" };
+            }
+            var pathToZip = Path.Combine(rootPath, user.UserName + ".zip");
+            ZipFile.CreateFromDirectory(pathToDir, pathToZip);
+            return new GetImageDTO { Success=true, FileStream=File.OpenRead(pathToZip)};
+        }
     }
 }

@@ -15,6 +15,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using BLL.Services;
 using BLL.DTOs;
+using System.IO.Compression;
+using System.Drawing.Printing;
 
 namespace Project.Controllers.V1
 {
@@ -35,7 +37,7 @@ namespace Project.Controllers.V1
         }
 
         [HttpPost, DisableRequestSizeLimit]
-        [Route("api/images/UploadImage")]
+        [Route("api/UploadImage")]
         public async Task<IActionResult> UploadImage()
         {
             if (!ModelState.IsValid)
@@ -60,8 +62,8 @@ namespace Project.Controllers.V1
         public async Task<IActionResult> Get(Guid id)
         {
             var userId = HttpContext.GetUserId();
-            var rootPath = _appEnvironment.WebRootPath;// + @"\Images\test";
-            var getImageDTO = await _imageService.GetImage(userId, id, rootPath);
+            var rootPath = _appEnvironment.WebRootPath;
+            var getImageDTO = await _imageService.GetImageAsync(userId, id, rootPath);
             if (!getImageDTO.Success)
             {
                 if(getImageDTO.Error== "it`s not your photo")
@@ -71,6 +73,21 @@ namespace Project.Controllers.V1
                 return NotFound(getImageDTO.Error);
             }
             return File(getImageDTO.FileStream, "image/jpeg", "Image.jpg");
+        }
+
+        [HttpGet("api/images")]
+        public async Task<IActionResult> GetAll()
+        {
+            var userId = HttpContext.GetUserId();
+            var rootPath = _appEnvironment.WebRootPath;
+            var zipDTO = await _imageService.GetAllImagesAsZipAsync(userId, rootPath);
+            if (zipDTO.Success == false)
+            {
+                if (zipDTO.Error == "There is no directory for this user")
+                    return NoContent();
+                return BadRequest(zipDTO.Error);
+            }
+            return File(zipDTO.FileStream, "application/zip", "Image.zip");
         }
         /*[HttpGet]
          public async Task<IActionResult> Get()
