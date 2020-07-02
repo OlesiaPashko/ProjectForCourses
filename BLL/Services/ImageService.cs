@@ -80,7 +80,7 @@ namespace BLL.Services
                 return new GetImageDTO { Error = ex.Message, Success = false };
             }
 
-            return new GetImageDTO { Success = true, FileStream = File.OpenRead(pathToImage) };
+            return new GetImageDTO { Success = true, FileStream = File.OpenRead(pathToImage), Caption= image.Caption };
         }
 
         public async Task<GetImageDTO> GetAllImagesAsZipAsync(string userId, string rootPath)

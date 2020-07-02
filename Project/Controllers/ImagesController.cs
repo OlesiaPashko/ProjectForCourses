@@ -1,22 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Project.Contracts.V1.Requests;
 using Project.Extentions;
-using Project.Models;
 using Microsoft.AspNetCore.Hosting;
-using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using BLL.Services;
 using BLL.DTOs;
-using System.IO.Compression;
-using System.Drawing.Printing;
+using Project.Contracts.V1.Responses;
 
 namespace Project.Controllers.V1
 {
@@ -59,7 +51,7 @@ namespace Project.Controllers.V1
         }
 
         [HttpGet("api/images/{id}")]
-        public async Task<IActionResult> Get(Guid id)
+        public async Task<ActionResult<GetImageResponse>> Get(Guid id)
         {
             var userId = HttpContext.GetUserId();
             var rootPath = _appEnvironment.WebRootPath;
@@ -72,7 +64,7 @@ namespace Project.Controllers.V1
                 }
                 return NotFound(getImageDTO.Error);
             }
-            return File(getImageDTO.FileStream, "image/jpeg", "Image.jpg");
+            return Ok(new GetImageResponse {File = getImageDTO.FileStream, Caption = getImageDTO.Caption});
         }
 
         [HttpGet("api/images/zip")]
@@ -89,12 +81,6 @@ namespace Project.Controllers.V1
             }
             return File(zipDTO.FileStream, "application/zip", "Image.zip");
         }
-
-       /* [HttpGet("/api/images/info")]
-        public async Task<IActionResult> GetAllInfo()
-        {
-            _imageService.
-        }*/
 
         [HttpDelete("api/images/{id}")]
         public async Task<IActionResult> Delete(Guid id)
