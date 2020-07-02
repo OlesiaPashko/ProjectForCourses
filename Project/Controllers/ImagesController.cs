@@ -75,8 +75,8 @@ namespace Project.Controllers.V1
             return File(getImageDTO.FileStream, "image/jpeg", "Image.jpg");
         }
 
-        [HttpGet("api/images")]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("api/images/zip")]
+        public async Task<IActionResult> GetAllZip()
         {
             var userId = HttpContext.GetUserId();
             var rootPath = _appEnvironment.WebRootPath;
@@ -89,53 +89,27 @@ namespace Project.Controllers.V1
             }
             return File(zipDTO.FileStream, "application/zip", "Image.zip");
         }
-        /*[HttpGet]
-         public async Task<IActionResult> Get()
-         {
-             var userId = HttpContext.GetUserId();
-             string login = (await _userService.GetUserByIdAsync(Guid.Parse(userId))).UserName;
-             var images = await _imageService.getAllAsync();
-             foreach(var item in images)
-             {
-                 var image = System.IO.File.OpenRead("C:\\test\\random_image.jpeg");
-                 return File(image, "image/jpeg");
-             }
-             var image = System.IO.File.OpenRead("C:\\test\\random_image.jpeg");
-             return File(image, "image/jpeg");
-         }
 
-         [HttpGet("api/images")]
-         public async Task<IActionResult> GetAll()
-         {
-             var userId = HttpContext.GetUserId();
-             var images =await _imageService.getAllAsync();
-             foreach(var image in images)
-             {
-                 using (FileStream fstream = File.OpenRead(image.Path))
-                 {
-                     byte[] array = new byte[fstream.Length];
-                     fstream.Read(array, 0, array.Length);
+       /* [HttpGet("/api/images/info")]
+        public async Task<IActionResult> GetAllInfo()
+        {
+            _imageService.
+        }*/
 
-                 }
-                 byte[] mas = File.ReadAllBytes(image.Path);
-                 string extention = Path.GetExtension(image.Path);
-                 string type = "png";
-                 if (extention == "jpg")
-                     type = "jpeg";
-                 string file_type = "application/" + type;
-                 // Имя файла - необязательно
-                 string file_name = Path.GetFileName(path);
-                 return File(mas, file_type, file_name);
-             }
-
-             if (success)
-             {
-                 return Ok("image was added");
-             }
-             else
-             {
-                 return BadRequest("Image can not be added");
-             }
-         }*/
+        [HttpDelete("api/images/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var userId = HttpContext.GetUserId();
+            var rootPath = _appEnvironment.WebRootPath;
+            try
+            {
+                await _imageService.DeleteImageAsync(userId, id, rootPath);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
+            return Ok("Deleted successfully");
+        }
     }
 }

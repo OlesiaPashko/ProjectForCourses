@@ -15,9 +15,9 @@ namespace BLL.Services
         Task<GetImageDTO> GetImageAsync(string userId, Guid imageId, string rootPath);
 
 
-        Task <GetImageDTO> GetAllImagesAsZipAsync(string userId, string rootPath);
+        Task<GetImageDTO> GetAllImagesAsZipAsync(string userId, string rootPath);
 
-        //Task<IFormFile> getFIleAsync();
+        Task DeleteImageAsync(string userId, Guid imageId, string rootPath);
 
     }
 }

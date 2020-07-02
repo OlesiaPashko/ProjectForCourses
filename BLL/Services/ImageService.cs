@@ -68,24 +68,19 @@ namespace BLL.Services
 
         public async Task<GetImageDTO> GetImageAsync(string userId, Guid imageId, string rootPath)
         {
-            var photo = await _unitOfWork.Images.SingleOrDefaultAsync(im => im.Id == imageId);
+            var image = await _unitOfWork.Images.SingleOrDefaultAsync(im => im.Id == imageId);
             var user = await _unitOfWork.Users.SingleOrDefaultAsync(u => u.Id == userId);
-            if (photo == null || user == null)
-                return new GetImageDTO { Success=false, Error = "Id is wrong"};
-            var login = user.UserName;
-            var pathToPhoto = rootPath + photo.Path;
-            var pathToDirectory = pathToPhoto.Substring(0, pathToPhoto.LastIndexOf('\\'));
-            var pathToDirectoryForCurrentUser = rootPath + @"\Images\" + login;
-            if (!pathToDirectoryForCurrentUser.Equals(pathToDirectory))
+            var pathToImage = "";
+            try
             {
-                return new GetImageDTO { Success = false, Error = "it`s not your photo" };
+                pathToImage = GetPathToImage(user, image, rootPath);
             }
-            if (!Directory.Exists(pathToDirectory) || !File.Exists(pathToPhoto))
+            catch(Exception ex)
             {
-                return new GetImageDTO { Success = false, Error = "Photo doesn`t exist" };
+                return new GetImageDTO { Error = ex.Message, Success = false };
             }
 
-            return new GetImageDTO { Success = true, FileStream = File.OpenRead(pathToPhoto) };
+            return new GetImageDTO { Success = true, FileStream = File.OpenRead(pathToImage) };
         }
 
         public async Task<GetImageDTO> GetAllImagesAsZipAsync(string userId, string rootPath)
@@ -102,5 +97,65 @@ namespace BLL.Services
             ZipFile.CreateFromDirectory(pathToDir, pathToZip);
             return new GetImageDTO { Success=true, FileStream=File.OpenRead(pathToZip)};
         }
+
+        public async Task DeleteImageAsync(string userId, Guid imageId, string rootPath)
+        {
+            var image = await _unitOfWork.Images.SingleOrDefaultAsync(im => im.Id == imageId);
+            var user = await _unitOfWork.Users.SingleOrDefaultAsync(u => u.Id == userId);
+            var pathToImage = "";
+            try
+            {
+                pathToImage = GetPathToImage(user, image, rootPath);
+                File.Delete(pathToImage);
+                _unitOfWork.Images.Remove(image);
+                await _unitOfWork.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+        }
+
+        private string GetPathToImage(User user, Image image, string rootPath)
+        {
+            if (image == null)
+                throw new Exception("Image id is wrong");
+            if(user == null)
+                throw new Exception("There is no such user in the system");
+            if(!UserOwnsImage(image, rootPath, user))
+                throw new Exception("it`s not your photo");
+            var pathToImage = rootPath + image.Path;
+            if (!IsPathValid(pathToImage))
+                throw new Exception("Image doesn`t exist");
+            return pathToImage;
+        }
+
+        private bool UserOwnsImage(Image image, string rootPath, User user)
+        {
+            var login = user.UserName;
+            var pathToImageFromDb = rootPath + image.Path;
+            var pathToDirectoryForCurrentUser = rootPath + @"\Images\" + login;
+            var pathToDirectoryFromDb = GetPathToDirectory(pathToImageFromDb);
+            if (!pathToDirectoryForCurrentUser.Equals(pathToDirectoryFromDb))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        private string GetPathToDirectory(string pathToFile)
+        {
+            return pathToFile.Substring(0, pathToFile.LastIndexOf('\\'));
+        }
+        private bool IsPathValid(string pathToImage)
+        {
+            var pathToDirectory = GetPathToDirectory(pathToImage);
+            if (!Directory.Exists(pathToDirectory) || !File.Exists(pathToImage))
+            {
+                return false;
+            }
+            return true;
+        }
+
     }
 }
