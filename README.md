@@ -1,6 +1,6 @@
 # ProjectForCourses
 
-This is site to store images. It gives ability to upload image and get all images as archive</ br>
+This is site to store images. It gives ability to upload image and get all images as archive </ br>
 
 Used technologies:
 - Angular for Front-end
