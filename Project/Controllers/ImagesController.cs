@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Project.Contracts.V1.Requests;
 using Project.Extentions;
-using Project.Models;
 using Microsoft.AspNetCore.Hosting;
-using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using BLL.Services;
 using BLL.DTOs;
+using Project.Contracts.V1.Responses;
 
 namespace Project.Controllers.V1
 {
@@ -56,67 +50,52 @@ namespace Project.Controllers.V1
             }
         }
 
-        [HttpGet("api/image")]
-        public ActionResult Images()
+        [HttpGet("api/images/{id}")]
+        public async Task<ActionResult<GetImageResponse>> Get(Guid id)
         {
             var userId = HttpContext.GetUserId();
-            var dir = _appEnvironment.WebRootPath + @"\Images\stringwetst";
-            var path = Path.Combine(dir, "2016-04-03202240794.jpg");
-            if (System.IO.File.Exists(path))
+            var rootPath = _appEnvironment.WebRootPath;
+            var getImageDTO = await _imageService.GetImageAsync(userId, id, rootPath);
+            if (!getImageDTO.Success)
             {
-                var fs = System.IO.File.OpenRead(path);
-                return File(fs, "image/jpeg", "2016-04-03202240794.jpg");
+                if(getImageDTO.Error== "it`s not your photo")
+                {
+                    return BadRequest(getImageDTO.Error);
+                }
+                return NotFound(getImageDTO.Error);
             }
-            else
-                return NotFound();
+            return Ok(new GetImageResponse {File = getImageDTO.FileStream, Caption = getImageDTO.Caption});
         }
-        /*[HttpGet]
-         public async Task<IActionResult> Get()
-         {
-             var userId = HttpContext.GetUserId();
-             string login = (await _userService.GetUserByIdAsync(Guid.Parse(userId))).UserName;
-             var images = await _imageService.getAllAsync();
-             foreach(var item in images)
-             {
-                 var image = System.IO.File.OpenRead("C:\\test\\random_image.jpeg");
-                 return File(image, "image/jpeg");
-             }
-             var image = System.IO.File.OpenRead("C:\\test\\random_image.jpeg");
-             return File(image, "image/jpeg");
-         }
 
-         [HttpGet("api/images")]
-         public async Task<IActionResult> GetAll()
-         {
-             var userId = HttpContext.GetUserId();
-             var images =await _imageService.getAllAsync();
-             foreach(var image in images)
-             {
-                 using (FileStream fstream = File.OpenRead(image.Path))
-                 {
-                     byte[] array = new byte[fstream.Length];
-                     fstream.Read(array, 0, array.Length);
+        [HttpGet("api/images/zip")]
+        public async Task<IActionResult> GetAllZip()
+        {
+            var userId = HttpContext.GetUserId();
+            var rootPath = _appEnvironment.WebRootPath;
+            var zipDTO = await _imageService.GetAllImagesAsZipAsync(userId, rootPath);
+            if (zipDTO.Success == false)
+            {
+                if (zipDTO.Error == "There is no directory for this user")
+                    return NoContent();
+                return BadRequest(zipDTO.Error);
+            }
+            return File(zipDTO.FileStream, "application/zip", "Image.zip");
+        }
 
-                 }
-                 byte[] mas = File.ReadAllBytes(image.Path);
-                 string extention = Path.GetExtension(image.Path);
-                 string type = "png";
-                 if (extention == "jpg")
-                     type = "jpeg";
-                 string file_type = "application/" + type;
-                 // Имя файла - необязательно
-                 string file_name = Path.GetFileName(path);
-                 return File(mas, file_type, file_name);
-             }
-
-             if (success)
-             {
-                 return Ok("image was added");
-             }
-             else
-             {
-                 return BadRequest("Image can not be added");
-             }
-         }*/
+        [HttpDelete("api/images/{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var userId = HttpContext.GetUserId();
+            var rootPath = _appEnvironment.WebRootPath;
+            try
+            {
+                await _imageService.DeleteImageAsync(userId, id, rootPath);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest(ex);
+            }
+            return Ok("Deleted successfully");
+        }
     }
 }

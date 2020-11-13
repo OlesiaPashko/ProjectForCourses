@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -11,9 +12,12 @@ namespace BLL.Services
     {
         Task<bool> UploadImage(string userId, IFormFile file, ImageDTO imageDTO);
 
-        //Task<List<ImageDTO>> getAllAsync();
+        Task<GetImageDTO> GetImageAsync(string userId, Guid imageId, string rootPath);
 
-        //Task<IFormFile> getFIleAsync();
+
+        Task<GetImageDTO> GetAllImagesAsZipAsync(string userId, string rootPath);
+
+        Task DeleteImageAsync(string userId, Guid imageId, string rootPath);
 
     }
 }
