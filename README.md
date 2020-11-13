@@ -10,9 +10,9 @@ Used technologies:
 ## Pages:
 ### Sign up page with validations:
 
-### Sign in page
+### Sign in page:
 
-### Main page
+### Main page:
 
-## Back-end endpoints (can be seen using Swagger)
+## Back-end endpoints (in Swagger)
 
